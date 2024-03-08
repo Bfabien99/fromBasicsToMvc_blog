@@ -4,6 +4,7 @@ function escape($string)
 {
     return strip_tags(trim($string));
 }
+
 ####    USER FUNCTIONS    ####
 class UserException extends Exception
 {
@@ -54,14 +55,17 @@ function saveUser(PDO $pdo, $user)
     if (strlen($pass) < 6) {
         throw new UserException("Password must contains at least 6 characteres!");
     }
-    if ($pass != $cPass) {
-        throw new UserException("Incorrect password! password must be the same!");
-    }
+    ## Verifie si le 'username' n'existe pas déja!
     if (getUserByUsername($pdo, $uName)) {
         throw new UserException("Sorry! Username already exist. Choose another one");
     }
-    if (getUserByEmail($pdo, $uName)) {
+    ## Verifie si le 'email' n'existe pas déja!
+    if (getUserByEmail($pdo, $email)) {
         throw new UserException("Sorry! Email already exist. Choose another one");
+    }
+    ## Verifie si les mots de passe correspondent
+    if ($pass != $cPass) {
+        throw new UserException("Incorrect password! password must be the same!");
     }
     ## Insertion des données
     $prep = $pdo->prepare("INSERT INTO users(public_id, firstname, lastname, email, username, password) VALUES(?,?,?,?,?,?)");
@@ -70,18 +74,36 @@ function saveUser(PDO $pdo, $user)
 
 function getUserByPublicID(PDO $pdo, $public_ID)
 {
+    ## Récupération de l'user par son public_ID
+    $stmt = $pdo->prepare("SELECT public_id, firstname, lastname, email, username, created_at FROM users WHERE public_id = ?");
+    $stmt->execute([$public_ID]);
+    $user = $stmt->fetch();
+    return $user;
 }
 
 function getUserByUsername(PDO $pdo, $username)
 {
+    ## Récupération de l'user par son username
+    $stmt = $pdo->prepare("SELECT public_id, firstname, lastname, email, username, created_at FROM users WHERE username = ?");
+    $stmt->execute([$username]);
+    $user = $stmt->fetch();
+    return $user;
 }
 
 function getUserByEmail(PDO $pdo, $email)
 {
+    ## Récupération de l'user par son email
+    $stmt = $pdo->prepare("SELECT public_id, firstname, lastname, email, username, created_at FROM users WHERE email = ?");
+    $stmt->execute([$email]);
+    $user = $stmt->fetch();
+    return $user;
 }
 
 function getAllUsers(PDO $pdo)
 {
+    $stmt = $pdo->query("SELECT public_id, firstname, lastname, email, username, created_at FROM users");
+    $users = $stmt->fetchAll();
+    return $users;
 }
 
 function existUser(PDO $pdo, $user)
@@ -96,7 +118,6 @@ function loginUser(PDO $pdo, $user)
     if(!is_array($user) || !array_key_exists("username", $user) || !array_key_exists("password", $user)) {
         throw new UserException("Required field missed!");
     }
-
     ## Récupération des données
     if(!empty($user["username"]) && !empty($user["password"])) {
         $uName = escape($user["username"]);
@@ -104,10 +125,9 @@ function loginUser(PDO $pdo, $user)
     }else{
         throw new UserException("Fill all fields!");
     }
-
     ## Verifie si l'utilisateur existe
-    $stmt = $pdo->prepare("SELECT public_id, password FROM users WHERE email OR pusername LIKE ?");
-    $stmt->execute([$uName]);
+    $stmt = $pdo->prepare("SELECT public_id, password FROM users WHERE email = ? OR username = ?");
+    $stmt->execute([$uName, $uName]);
     $user = $stmt->fetch();
     if(!empty($user)){
         ## Verifie si le mot de passe est correct
