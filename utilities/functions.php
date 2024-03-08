@@ -32,7 +32,7 @@ function userFieldValidator($user): void
     }
 }
 
-## Sauvegarder les donnée de l'utilisateur dans la BD
+### INSERTION DE USER DANS LA BD
 function saveUser(PDO $pdo, $user)
 {
     ## Valider les données de $user
@@ -89,9 +89,30 @@ function existUser(PDO $pdo, $user)
     userFieldValidator($user);
 }
 
+### LOGIN DE USER
 function loginUser(PDO $pdo, $user)
 {
-    userFieldValidator($user);
+    ## Validation du tableau $user
+    if(!is_array($user) || !array_key_exists("username", $user) || !array_key_exists("password", $user)) {
+        throw new UserException("Required field missed!");
+    }
+    ## Récupération des données
+    $uName = escape($user["username"]);
+    $pass = escape($user["password"]);
+
+    ## Verifie si l'utilisateur existe
+    $stmt = $pdo->prepare("SELECT public_id, password FROM users WHERE email OR pusername LIKE ?");
+    $stmt->execute([$uName]);
+    $user = $stmt->fetch();
+    if(!empty($user)){
+        ## Verifie si le mot de passe est correct
+        if(!password_verify($pass, $user["password"])) {
+            throw new UserException("Username or Email or Password is incorrect!");
+        }
+    }else{
+        throw new UserException("Username or Email or Password is incorrect!");
+    }
+    return $user['public_id'];
 }
 
 function updateUser(PDO $pdo, $user, $public_ID)
