@@ -3,9 +3,13 @@ include("includes/header.php");
 if($_SERVER['REQUEST_METHOD'] === "POST"){
     try {
         saveUser($pdo, $_POST);
+        $_SESSION['msg']['type'] = "success";
+        $_SESSION['msg']['content'] = "Saved successfully, let's login now!";
+        header('Location: /login.php');
+        exit();
     }
     catch (Exception $th) {
-        $msg_type = "danger";
+        $msg_type = "error";
         $msg_content = $th->getMessage();
         $_SESSION['msg'] = false;
     }
@@ -13,6 +17,10 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
 ?>
 <section>
     <form action="" method="post">
+    <?php if(!empty($msg_type)):?>
+            <p class="<?= $msg_type; ?>"><?= $msg_content; ?></p>
+        <?php endif;?>
+        <h3>Register to Blog!</h3>
     <div class="group">
             <label for="formFirstname">Firstname</label>
             <input type="text" name="firstname" id="formFirstname">

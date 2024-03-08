@@ -96,9 +96,14 @@ function loginUser(PDO $pdo, $user)
     if(!is_array($user) || !array_key_exists("username", $user) || !array_key_exists("password", $user)) {
         throw new UserException("Required field missed!");
     }
+
     ## Récupération des données
-    $uName = escape($user["username"]);
-    $pass = escape($user["password"]);
+    if(!empty($user["username"]) && !empty($user["password"])) {
+        $uName = escape($user["username"]);
+        $pass = escape($user["password"]);
+    }else{
+        throw new UserException("Fill all fields!");
+    }
 
     ## Verifie si l'utilisateur existe
     $stmt = $pdo->prepare("SELECT public_id, password FROM users WHERE email OR pusername LIKE ?");
@@ -112,7 +117,7 @@ function loginUser(PDO $pdo, $user)
     }else{
         throw new UserException("Username or Email or Password is incorrect!");
     }
-    return $user['public_id'];
+    return [$user['public_id'], $user['username']];
 }
 
 function updateUser(PDO $pdo, $user, $public_ID)
