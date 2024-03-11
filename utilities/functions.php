@@ -81,6 +81,7 @@ function saveUser(PDO $pdo, $user)
     $prep->execute([sha1(($uName . time() . $email . rand(999, 999999))), $fName, $lName, $email, $uName, password_hash($pass, PASSWORD_DEFAULT)]);
 }
 
+## Récupération de l'user par son public_id
 function getUserByPublicID(PDO $pdo, $public_ID)
 {
     ## Récupération de l'user par son public_ID
@@ -90,6 +91,7 @@ function getUserByPublicID(PDO $pdo, $public_ID)
     return $user;
 }
 
+## Récupération de l'user par son username
 function getUserByUsername(PDO $pdo, $username)
 {
     ## Récupération de l'user par son username
@@ -99,6 +101,7 @@ function getUserByUsername(PDO $pdo, $username)
     return $user;
 }
 
+## Récupération de l'user par son email
 function getUserByEmail(PDO $pdo, $email)
 {
     ## Récupération de l'user par son email
@@ -108,6 +111,7 @@ function getUserByEmail(PDO $pdo, $email)
     return $user;
 }
 
+## Récupération de tous les utilisateurs
 function getAllUsers(PDO $pdo)
 {
     $stmt = $pdo->query("SELECT public_id, firstname, lastname, email, username, created_at FROM users");
@@ -115,12 +119,13 @@ function getAllUsers(PDO $pdo)
     return $users;
 }
 
+## Vérification de l'existance d'un utilisateur(pas encore implementée)
 function existUser(PDO $pdo, $user)
 {
     userFieldValidator($user);
 }
 
-### LOGIN DE USER
+## LOGIN DE USER
 function loginUser(PDO $pdo, $user)
 {
     ## Validation du tableau $user
@@ -149,16 +154,19 @@ function loginUser(PDO $pdo, $user)
     return ["public_id" => $user['public_id'], "username" => $user['username']];
 }
 
+## Mise à jour des informations de l'user(pas encore implementée)
 function updateUser(PDO $pdo, $user, $public_ID)
 {
     userFieldValidator($user);
 }
 
+## Supprimer un utilisateur (pas encore implementée)
 function removeUser(PDO $pdo, $public_ID)
 {
 }
 
 ####    POSTS FUNCTIONS     ####
+## Créer un slug à partir du titre
 function createSlug($text)
 {
     // Convertit le texte en minuscules
@@ -195,6 +203,7 @@ function postFieldValidator($post): void
     }
 }
 
+## Enregistrer une image
 function savePicture($file)
 {
     if (($file == null) || !is_array($file) || $file['upfile']['name'] == "") {
@@ -266,6 +275,7 @@ function savePicture($file)
 
 }
 
+## Sauvegarder un Post
 function savePost(PDO $pdo, $public_id, $post, $file = null)
 {
     postFieldValidator($post);
@@ -303,11 +313,13 @@ function savePost(PDO $pdo, $public_id, $post, $file = null)
     }
 }
 
+## Mise à jour des informations du Post(pas encore implementée)
 function updatePost(PDO $pdo, $public_id, $post_id, $post)
 {
 
 }
 
+## Récupération de tous les Posts
 function getAllPost(PDO $pdo)
 {
     $stmt = $pdo->prepare("SELECT * FROM posts");
@@ -316,6 +328,7 @@ function getAllPost(PDO $pdo)
     return $posts;
 }
 
+## Récupération de tous les Posts d'un user par son public_id
 function getAllPostByUserPublicID(PDO $pdo, $public_id)
 {
     $stmt = $pdo->prepare("SELECT * FROM posts WHERE user_public_id = ?");
@@ -324,6 +337,7 @@ function getAllPostByUserPublicID(PDO $pdo, $public_id)
     return $post;
 }
 
+## Récupération d'un Post par son ID
 function getPostByID(PDO $pdo, $post_id)
 {
     $stmt = $pdo->prepare("SELECT * FROM posts WHERE id = ?");
@@ -332,11 +346,13 @@ function getPostByID(PDO $pdo, $post_id)
     return $post;
 }
 
+## Récupération du Post d'un user par son public_id et l'id du post (pas encore implementée)
 function getOnePostByUserPublicID(PDO $pdo, $public_id, $post_id)
 {
 
 }
 
+## Récupération d'un Post par son slug
 function getPostBySlug(PDO $pdo, $slug)
 {
     $stmt = $pdo->prepare("SELECT * FROM posts WHERE slug = ?");
@@ -345,6 +361,7 @@ function getPostBySlug(PDO $pdo, $slug)
     return $post;
 }
 
+## Vérifier si le titre du Post exist
 function isPostTitleExist(PDO $pdo, $title)
 {
     $stmt = $pdo->prepare("SELECT * FROM posts WHERE title = ?");
@@ -353,12 +370,14 @@ function isPostTitleExist(PDO $pdo, $title)
     return $post;
 }
 
+## Supprimer un post (pas encore implementée)
 function deletePost(PDO $pdo, $public_id, $post_id)
 {
 
 }
 
 ####    CATEGORIES FUNCTIONS    ####
+## Validateur des champs de Category
 function categoryFieldValidator($category): void
 {
     ## Les champs requis
@@ -381,6 +400,7 @@ function categoryFieldValidator($category): void
     }
 }
 
+## Enregisterer une Category
 function savecategory(PDO $pdo, $category)
 {
     categoryFieldValidator($category);
@@ -393,16 +413,19 @@ function savecategory(PDO $pdo, $category)
     $stmt->execute([$title]);
 }
 
+## Mettre à jour une Category (pas encore implementée)
 function updatecategory(PDO $pdo, $category)
 {
 
 }
 
+## Supprimer une Category (pas encore implementée)
 function deleteCategory(PDO $pdo, $category_id)
 {
 
 }
 
+## Recupérer une Category par son id
 function getCategoryByID(PDO $pdo, $category_id)
 {
     $stmt = $pdo->prepare("SELECT * FROM categories WHERE id = ?");
@@ -411,6 +434,7 @@ function getCategoryByID(PDO $pdo, $category_id)
     return $category;
 }
 
+## Recupérer une Category par son titre
 function getCategoryByTitle(PDO $pdo, $title)
 {
     $stmt = $pdo->prepare("SELECT * FROM categories WHERE title = ?");
@@ -419,6 +443,7 @@ function getCategoryByTitle(PDO $pdo, $title)
     return $category;
 }
 
+## Recupérer toutes les Category
 function getAllCategories(PDO $pdo)
 {
     $stmt = $pdo->query("SELECT * FROM categories");
@@ -426,6 +451,7 @@ function getAllCategories(PDO $pdo)
     return $categories;
 }
 
+## Recuper toutes les Category d'un Post par son id
 function getCategoryByPostID(PDO $pdo, $post_id)
 {
     $cats = [];
@@ -441,6 +467,7 @@ function getCategoryByPostID(PDO $pdo, $post_id)
     return $cats;
 }
 
+## Relier une Category à un Post
 function linkPostToCategory(PDO $pdo, $post_id, $category_id)
 {
     if (!getPostByID($pdo, $post_id)) {
