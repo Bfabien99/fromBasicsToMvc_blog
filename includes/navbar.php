@@ -9,11 +9,12 @@
         <?php if(!empty($user)): ?>
             <!-- CONNECTED -->
             <ul>
+                <li><a href="my_posts.php">My Posts</a></li>
                 <li><a href="create_post.php">create post</a></li>
                 <li><a href="profil.php">profile</a></li>
                 <li><a href="logout.php">logout</a></li>
             </ul>
-            <!-- CONNECTED -->
+            <!-- END CONNECTED -->
         <?php else: ?>
             <ul>
                 <li><a href="login.php">login</a></li>

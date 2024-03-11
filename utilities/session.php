@@ -10,6 +10,7 @@ if(!empty($_SESSION['user_public_id'])){
     if(!getUserByPublicID($pdo,$_SESSION['user_public_id'])){
         $_SESSION['msg']['type'] = 'error';
         $_SESSION['msg']['content'] = 'Invalid User Credentials!';
+        unset($_SESSION['user_public_id']);
         header('Location: /index.php');
         exit();
     }else{

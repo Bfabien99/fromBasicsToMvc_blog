@@ -1,6 +1,10 @@
 <?php
 include("includes/header.php");
-$posts = getAllPost($pdo);
+if (!isset($_SESSION["user_public_id"])) {
+    header("Location: /index.php");
+    exit();
+}
+$posts = getAllPostByUserPublicID($pdo, $_SESSION["user_public_id"]);
 ?>
 <section>
     <?php if (!empty($msg_type)): ?>
@@ -43,7 +47,7 @@ $posts = getAllPost($pdo);
                             </div>
                         </div>
                     </div>
-                    <a href="show_post.php?slug=<?= $post['slug'] ?>" class="btn btnMore">show more</a>
+                    <a href="user_show_post.php?slug=<?= $post['slug'] ?>" class="btn btnMore">show more</a>
                 </div>
             <?php endforeach ?>
         </div>

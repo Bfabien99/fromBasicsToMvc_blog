@@ -262,7 +262,7 @@ function savePicture($file)
     ) {
         throw new RuntimeException('Failed to move uploaded file.');
     }
-    return $unique_file_name;
+    return $unique_file_name.$ext;
 
 }
 
@@ -311,13 +311,17 @@ function updatePost(PDO $pdo, $public_id, $post_id, $post)
 function getAllPost(PDO $pdo)
 {
     $stmt = $pdo->prepare("SELECT * FROM posts");
+    $stmt->execute();
     $posts = $stmt->fetchAll();
     return $posts;
 }
 
 function getAllPostByUserPublicID(PDO $pdo, $public_id)
 {
-
+    $stmt = $pdo->prepare("SELECT * FROM posts WHERE user_public_id = ?");
+    $stmt->execute([$public_id]);
+    $post = $stmt->fetchAll();
+    return $post;
 }
 
 function getPostByID(PDO $pdo, $post_id)
@@ -420,6 +424,21 @@ function getAllCategories(PDO $pdo)
     $stmt = $pdo->query("SELECT * FROM categories");
     $categories = $stmt->fetchAll();
     return $categories;
+}
+
+function getCategoryByPostID(PDO $pdo, $post_id)
+{
+    $cats = [];
+    $stmt = $pdo->prepare("SELECT cat_id FROM post_cat WHERE post_id = ?");
+    $stmt->execute([$post_id]);
+    $categories = $stmt->fetchAll();
+
+    if(count($categories) > 0){
+        foreach($categories as $category){
+            $cats[] = getCategoryByID($pdo, $category['cat_id']);
+        }
+    }
+    return $cats;
 }
 
 function linkPostToCategory(PDO $pdo, $post_id, $category_id)

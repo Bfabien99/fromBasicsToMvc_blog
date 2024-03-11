@@ -30,11 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     <form action="" method="post" enctype="multipart/form-data">
         <h3>Login to Blog!</h3>
         <div class="group">
-            <label for="formTitle">Post Title</label>
+            <label for="formTitle">Post Title <span class="hint">Between 10 and 100 characteres</span></label>
             <input type="text" name="title" id="formTitle">
         </div>
         <div class="group">
-            <label for="formContent">Post Content <span id="contLen">0</span></label>
+            <label for="formContent">Post Content <span class="hint">Between 200 and 1000 characteres</span></label>
+            <span id="contLen">0</span>
             <textarea name="content" id="formContent" cols="30" rows="10" minlength="200"></textarea>
         </div>
         <div class="group">
