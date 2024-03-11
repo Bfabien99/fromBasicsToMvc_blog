@@ -1,14 +1,17 @@
-<?php 
+<?php
 include("includes/header.php");
-if($_SERVER['REQUEST_METHOD'] === "POST"){
+if (isset($_SESSION["user_public_id"]) && getUserByPublicID($pdo, $_SESSION["user_public_id"])) {
+    header("Location: /profil.php");
+    exit();
+}
+if ($_SERVER['REQUEST_METHOD'] === "POST") {
     try {
         saveUser($pdo, $_POST);
         $_SESSION['msg']['type'] = "success";
         $_SESSION['msg']['content'] = "Saved successfully, let's login now!";
         header('Location: /login.php');
         exit();
-    }
-    catch (Exception $th) {
+    } catch (Exception $th) {
         $msg_type = "error";
         $msg_content = $th->getMessage();
         $_SESSION['msg'] = false;
@@ -16,12 +19,18 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
 }
 ?>
 <section>
+    <?php if (!empty($msg_type)): ?>
+        <div class="msgBox">
+            <hr>
+            <p class="<?= $msg_type; ?>">
+                <?= $msg_content; ?>
+            </p>
+            <hr>
+        </div>
+    <?php endif; ?>
     <form action="" method="post">
-    <?php if(!empty($msg_type)):?>
-            <p class="<?= $msg_type; ?>"><?= $msg_content; ?></p>
-        <?php endif;?>
         <h3>Register to Blog!</h3>
-    <div class="group">
+        <div class="group">
             <label for="formFirstname">Firstname</label>
             <input type="text" name="firstname" id="formFirstname">
         </div>
@@ -51,6 +60,6 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
         </div>
     </form>
 </section>
-<?php 
+<?php
 include("includes/footer.php");
 ?>

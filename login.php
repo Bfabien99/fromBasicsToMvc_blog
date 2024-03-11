@@ -1,15 +1,18 @@
-<?php 
+<?php
 include("includes/header.php");
-if($_SERVER['REQUEST_METHOD'] === "POST"){
+if (isset($_SESSION["user_public_id"]) && getUserByPublicID($pdo, $_SESSION["user_public_id"])) {
+    header("Location: /profil.php");
+    exit();
+}
+if ($_SERVER['REQUEST_METHOD'] === "POST") {
     try {
         $user = loginUser($pdo, $_POST);
         $_SESSION['msg']['type'] = "success";
-        $_SESSION['msg']['content'] = "Welcome back #<b>".$user['username']."</b>";
+        $_SESSION['msg']['content'] = "Welcome back #<b>" . $user['username'] . "</b>";
         $_SESSION["user_public_id"] = $user['public_id'];
         header('Location: /index.php');
         exit();
-    }
-    catch (Exception $th) {
+    } catch (Exception $th) {
         $msg_type = "error";
         $msg_content = $th->getMessage();
         $_SESSION['msg'] = false;
@@ -17,10 +20,16 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
 }
 ?>
 <section>
+    <?php if (!empty($msg_type)): ?>
+        <div class="msgBox">
+            <hr>
+            <p class="<?= $msg_type; ?>">
+                <?= $msg_content; ?>
+            </p>
+            <hr>
+        </div>
+    <?php endif; ?>
     <form action="" method="post">
-        <?php if(!empty($msg_type)):?>
-            <p class="<?= $msg_type; ?>"><?= $msg_content; ?></p>
-        <?php endif;?>
         <h3>Login to Blog!</h3>
         <div class="group">
             <label for="formUsername">Username or Email</label>
@@ -36,6 +45,6 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
         </div>
     </form>
 </section>
-<?php 
+<?php
 include("includes/footer.php");
 ?>
